@@ -27,7 +27,7 @@ contract('CANSign', accounts => {
 
         return CANSign.deployed().then(instance => {
             cansign = instance;
-            return cansign.addDocument(hash, creator, expirationDate, signers, names);
+            return cansign.addDocument(hash, creator, expirationDate, signers);
         }).then(() => {
             return cansign.getDocumentId(hash);
         }).then(_docId => {
@@ -45,9 +45,7 @@ contract('CANSign', accounts => {
             return cansign.getDocumentSigners(docId);
         }).then(_signers => {
             console.log(_signers);
-            return cansign.getSignerName(docId, _signers[1]);
-        }).then(_name => {
-            console.log(_name.valueOf());
+            assert.equal(_signers[0].toUpperCase(), signers[0].toUpperCase(), 'document signer address does not match input signer address');
         }).catch(error => console.log(error));
     });
 });

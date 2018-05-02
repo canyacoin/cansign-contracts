@@ -5,8 +5,8 @@ contract CANSign {
     struct Signer {
         address _address;
         string name;
-        // uint256 dateOfBirth;
-        // uint256 signedAt;
+        uint256 dateOfBirth;
+        uint256 signedAt;
     }
     
     struct Document {
@@ -25,30 +25,23 @@ contract CANSign {
         string _hash, 
         address _creator, 
         uint256 _expirationDate, 
-        address[] _signers,
-        string[] _names) public {
+        address[] _signers) public {
 
         documents[_hash].hash = _hash;
         documents[_hash].creator = _creator;
         documents[_hash].expirationDate = _expirationDate;
         documents[_hash]._signers = _signers;
 
-        addSignersToDocument(_hash, _signers, _names);
+        addSignersToDocument(_hash, _signers);
     }
 
-    function addSignersToDocument(string _hash, address[] _signers, string[] _names) internal {
+    function addSignersToDocument(string _hash, address[] _signers) internal {
         uint arrayLength = _signers.length;
         
         for (uint i = 0; i < arrayLength; i++) {
             address signerAddress = _signers[i];
-            // string memory signerName = _names[i];
 
-            Signer memory signer = Signer({
-                _address: signerAddress,
-                name: _names[i]
-                });
-
-            documents[_hash].signers[signerAddress] = signer;
+            documents[_hash].signers[signerAddress]._address = signerAddress;
         }
     }
 
