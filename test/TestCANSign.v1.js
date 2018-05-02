@@ -20,6 +20,11 @@ contract('CANSign', accounts => {
         'E. Charles White',
         'Mirta Stapunk'
     ];
+    let emails = [
+        'signer1@email.com',
+        'signer2@email.com',
+        'signer3@email.com',
+    ];
 
     it('should add a document', () => {
 
@@ -54,11 +59,12 @@ contract('CANSign', accounts => {
         let index = 1;
         let signer = signers[index];
         let name = names[index];
+        let email = emails[index];
 
-        return cansign.sign(docId, signatureTimestamp, name, { from: signer }).then(() => {
-            return cansign.getSignerName(docId, signer);
-        }).then(_name => {
-            assert.equal(_name.valueOf(), name, 'signer name does not match input name');
+        return cansign.sign(docId, signatureTimestamp, email, { from: signer }).then(() => {
+            return cansign.getSignerEmail(docId, signer);
+        }).then(_email => {
+            assert.equal(_email.valueOf(), email, 'signer email does not match input email');
             return cansign.getSignerTimestamp(docId, signer);
         }).then(_timestamp => {
             assert.equal(_timestamp.valueOf(), signatureTimestamp, 'signer timestamp does not match input timestamp');
