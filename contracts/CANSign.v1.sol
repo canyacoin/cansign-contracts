@@ -4,9 +4,9 @@ contract CANSign {
     
     struct Signer {
         address _address;
-        string name;
+        uint256 timestamp;
         uint256 dateOfBirth;
-        uint256 signedAt;
+        string name;
     }
     
     struct Document {
@@ -35,6 +35,14 @@ contract CANSign {
         addSignersToDocument(_hash, _signers);
     }
 
+    function sign(string _hash, uint256 _timestamp, string _name) public {
+        Signer storage signer = documents[_hash].signers[msg.sender];
+
+        signer.timestamp = _timestamp;
+
+        signer.name = _name;
+    }
+
     function addSignersToDocument(string _hash, address[] _signers) internal {
         uint arrayLength = _signers.length;
         
@@ -51,6 +59,10 @@ contract CANSign {
 
     function getSignerName(string _hash, address _signer) view public returns (string) {
         return documents[_hash].signers[_signer].name;
+    }
+
+    function getSignerTimestamp(string _hash, address _signer) view public returns (uint256) {
+        return documents[_hash].signers[_signer].timestamp;
     }
 
     function getDocumentId(string _hash) view public returns (string) {
