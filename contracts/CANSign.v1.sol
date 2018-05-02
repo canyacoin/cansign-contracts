@@ -24,12 +24,11 @@ contract CANSign {
     
     function addDocument(
         string _hash, 
-        address _creator, 
         uint256 _expirationDate, 
         address[] _signers) public {
 
         documents[_hash].hash = _hash;
-        documents[_hash].creator = _creator;
+        documents[_hash].creator = msg.sender;
         documents[_hash].expirationDate = _expirationDate;
         documents[_hash]._signers = _signers;
 

@@ -33,7 +33,7 @@ contract('CANSign', accounts => {
 
         return CANSign.deployed().then(instance => {
             cansign = instance;
-            return cansign.addDocument(hash, creator, expirationDate, signers);
+            return cansign.addDocument(hash, expirationDate, signers);
         }).then(() => {
             return cansign.getDocumentId(hash);
         }).then(_docId => {
