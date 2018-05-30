@@ -11,9 +11,9 @@ contract('CANSign', accounts => {
     let docId;
 
     let signers = [
-        '0xc1C5A5819FA352Aa974e49aE3F7b05380C0A95Ee',
-        '0x5A12A8fbb117eEb46f1E8aa9B266FcC10Be19136',
-        '0x3C34e38883Cd1c6d4FdaC3A2f6CD91C5b3735420'
+        '0xB864604A52e2f780aDDD1526a4d13600818a66C7',
+        '0xbBc0c81CaA3b0811b531Cf494994291b7FA19Fc0',
+        '0x27FA1096C0e8B7E5f457f8cB95410C07c45D3447'
     ];
     let names = [
         'Chuchito Pérez',
@@ -48,6 +48,9 @@ contract('CANSign', accounts => {
             return cansign.getDocumentSigners(docId);
         }).then(_signers => {
             assert.equal(_signers[0].toUpperCase(), signers[0].toUpperCase(), 'document signer address does not match input signer address');
+            return cansign.getSignerStatus(docId, signers[0]);
+        }).then(_status => {
+            assert.equal(_status, 'pending', 'signer status does not match "pending" status');
         }).catch(error => console.log(error));
     });
 
@@ -68,6 +71,9 @@ contract('CANSign', accounts => {
             return cansign.getSignerTimestamp(docId, signer);
         }).then(_timestamp => {
             assert.equal(_timestamp.valueOf(), signatureTimestamp, 'signer timestamp does not match input timestamp');
+            return cansign.getSignerStatus(docId, signer);
+        }).then(_status => {
+            assert.equal(_status, 'signed', 'signer status does not match "signed" status');
         }).catch(error => console.log(error));
     });
 });

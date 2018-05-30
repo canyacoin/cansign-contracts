@@ -6,6 +6,7 @@ contract CANSign {
         address _address;
         uint256 timestamp;
         uint256 dateOfBirth;
+        string status;
         string name;
         string email;
     }
@@ -41,6 +42,8 @@ contract CANSign {
         signer.timestamp = _timestamp;
 
         signer.email = _email;
+
+        signer.status = 'signed';
     }
 
     function addSignersToDocument(string _hash, address[] _signers) internal {
@@ -50,6 +53,7 @@ contract CANSign {
             address signerAddress = _signers[i];
 
             documents[_hash].signers[signerAddress]._address = signerAddress;
+            documents[_hash].signers[signerAddress].status = 'pending';
         }
     }
 
@@ -63,6 +67,10 @@ contract CANSign {
 
     function getSignerName(string _hash, address _signer) view public returns (string) {
         return documents[_hash].signers[_signer].name;
+    }
+
+    function getSignerStatus(string _hash, address _signer) view public returns (string) {
+        return documents[_hash].signers[_signer].status;
     }
 
     function getSignerTimestamp(string _hash, address _signer) view public returns (uint256) {
