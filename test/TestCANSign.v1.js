@@ -1,7 +1,5 @@
 let CANSign = artifacts.require('./CANSign.sol');
 
-const bs58 = require('bs58');
-
 contract('CANSign', accounts => {
 
     let cansign;
@@ -29,11 +27,20 @@ contract('CANSign', accounts => {
     it('should add a document', () => {
 
         let creator = owner;
+        let name = 'my-file.pdf';
+        let lastModified = (new Date()).getTime();
+        let uploadedAt = (new Date()).getTime();
         let expirationDate = (new Date()).getTime();
 
         return CANSign.deployed().then(instance => {
             cansign = instance;
-            return cansign.addDocument(hash, expirationDate, signers);
+            return cansign.addDocument(
+                hash, 
+                name, 
+                lastModified, 
+                uploadedAt, 
+                expirationDate, 
+                signers);
         }).then(() => {
             return cansign.getDocumentId(hash);
         }).then(_docId => {
@@ -51,6 +58,15 @@ contract('CANSign', accounts => {
             return cansign.getSignerStatus(docId, signers[0]);
         }).then(_status => {
             assert.equal(_status, 'pending', 'signer status does not match "pending" status');
+            return cansign.getDocumentName(docId);
+        }).then(_name => {
+            assert.equal(_name, name, 'document name does not match input name');
+            return cansign.getDocumentLastModifiedDate(docId);
+        }).then(_lastModified => {
+            assert.equal(_lastModified.valueOf(), lastModified, 'lastModified timestamp does not match input timestamp');
+            return cansign.getDocumentUploadedAtDate(docId);
+        }).then(_uploadedAt => {
+            assert.equal(_uploadedAt.valueOf(), uploadedAt, 'uploadedAt timestamp does not match input timestamp');
         }).catch(error => console.log(error));
     });
 
@@ -63,6 +79,7 @@ contract('CANSign', accounts => {
         let signer = signers[index];
         let name = names[index];
         let email = emails[index];
+        let blockNumber = 1;
 
         return cansign.sign(docId, signatureTimestamp, email, { from: signer }).then(() => {
             return cansign.getSignerEmail(docId, signer);
@@ -74,6 +91,10 @@ contract('CANSign', accounts => {
             return cansign.getSignerStatus(docId, signer);
         }).then(_status => {
             assert.equal(_status, 'signed', 'signer status does not match "signed" status');
+            return cansign.getSignerBlockNumber(docId, signer);
+        }).then(_blockNumber => {
+            console.log(_blockNumber)
+            assert.equal(_blockNumber.valueOf(), blockNumber, 'signer status does not match "signed" status');
         }).catch(error => console.log(error));
     });
 });
