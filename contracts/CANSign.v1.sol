@@ -46,14 +46,12 @@ contract CANSign {
         addSignersToDocument(_hash, _signers);
     }
 
-    function sign(string _hash, uint256 _timestamp, string _email) public {
+    function sign(string _hash, uint256 _timestamp) public {
         Signer storage signer = documents[_hash].signers[msg.sender];
 
         signer.timestamp = _timestamp;
 
         signer.blockNumber = block.number;
-
-        signer.email = _email;
 
         signer.status = 'signed';
     }

@@ -81,7 +81,7 @@ contract('CANSign', accounts => {
         let email = emails[index];
         let blockNumber = 1;
 
-        return cansign.sign(docId, signatureTimestamp, email, { from: signer }).then(() => {
+        return cansign.sign(docId, signatureTimestamp, { from: signer }).then(() => {
             return cansign.getSignerEmail(docId, signer);
         }).then(_email => {
             assert.equal(_email.valueOf(), email, 'signer email does not match input email');
