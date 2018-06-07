@@ -47,15 +47,17 @@ contract CANSign {
         return false;
     }
 
-    // function _documentExists(string _hash) internal returns (bool) {
-    //     return documents[_hash].hash != '' ? true : false;
-    // }
+    function _documentExists(string _hash) view internal returns (bool) {
+        bytes memory tempEmptyStringTest = bytes(documents[_hash].hash);
+
+        return (tempEmptyStringTest.length != 0) ? true : false;
+    }
 
     function addDocument(
         string _hash, 
         address[] _signers) public {
 
-        // require(!_documentExists(_hash));
+        require(!_documentExists(_hash));
 
         documents[_hash].hash = _hash;
         documents[_hash].creator = msg.sender;

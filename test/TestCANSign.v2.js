@@ -71,11 +71,12 @@ contract('CANSign', accounts => {
                 return cansign.addDocument(
                     hash,
                     signers);
-            }).then(() => {
-                return cansign.getDocumentId(hash);
-            }).then(docId => {
-                console.log(docId, typeof docId);
-            }).catch(error => console.log(error));
+            }).catch(error => {
+                assert.include(
+                    error.message,
+                    `Transaction: ${error.tx} exited with an error (status 0).`
+                )
+            })
         });
     })
 
