@@ -1,4 +1,4 @@
-var CANSign = artifacts.require("../contracts/CANSign.sol");
+var CANSign = artifacts.require("CANSign.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(CANSign);

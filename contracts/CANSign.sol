@@ -15,56 +15,74 @@ contract CANSign {
     struct Document {
         string hash;
         address creator;
-        string name;
-        uint256 lastModified;
-        uint256 uploadedAt;
-        uint256 expirationDate;
+        uint256 timestamp;
         address[] _signers;
         mapping (address => Signer) signers;
     }
     
     mapping (string => Document) documents;
-    
-    function CANSign() public {}
-    
-    function addDocument(
-        string _hash, 
-        string _name,
-        uint256 _lastModified, 
-        uint256 _uploadedAt, 
-        uint256 _expirationDate, 
-        address[] _signers) public {
 
-        documents[_hash].hash = _hash;
-        documents[_hash].creator = msg.sender;
-        documents[_hash].name = _name;
-        documents[_hash].lastModified = _lastModified;
-        documents[_hash].uploadedAt = _uploadedAt;
-        documents[_hash].expirationDate = _expirationDate;
-        documents[_hash]._signers = _signers;
 
-        addSignersToDocument(_hash, _signers);
-    }
+    event OnInvalidSigner(string _hash, address _signer);
+    event OnAddDocument(string _hash, uint256 _timestamp);
+    event OnSignDocument(string _hash, address _signer, uint256 _timestamp);
 
-    function sign(string _hash, uint256 _timestamp) public {
-        Signer storage signer = documents[_hash].signers[msg.sender];
 
-        signer.timestamp = _timestamp;
+    function _signerExists(string _hash) internal returns (bool) {
+        Document memory document = documents[_hash];
 
-        signer.blockNumber = block.number;
+        address[] memory _signers = document._signers;
 
-        signer.status = 'signed';
-    }
-
-    function addSignersToDocument(string _hash, address[] _signers) internal {
         uint arrayLength = _signers.length;
         
         for (uint i = 0; i < arrayLength; i++) {
             address signerAddress = _signers[i];
 
-            documents[_hash].signers[signerAddress]._address = signerAddress;
-            documents[_hash].signers[signerAddress].status = 'pending';
+            if (signerAddress == msg.sender) {
+                return true;
+            }
         }
+
+        OnInvalidSigner(_hash, msg.sender);
+        return false;
+    }
+
+    // function _documentExists(string _hash) internal returns (bool) {
+    //     return documents[_hash].hash != '' ? true : false;
+    // }
+
+    function addDocument(
+        string _hash, 
+        address[] _signers) public {
+
+        // require(!_documentExists(_hash));
+
+        documents[_hash].hash = _hash;
+        documents[_hash].creator = msg.sender;
+        documents[_hash].timestamp = block.timestamp;
+        documents[_hash]._signers = _signers;
+
+        OnAddDocument(_hash, documents[_hash].timestamp);
+    }
+
+    function sign(string _hash) public returns (bool) {
+        require(_signerExists(_hash));
+
+        Signer memory signer;
+
+        signer.timestamp = block.timestamp;
+
+        signer.blockNumber = block.number;
+
+        signer.status = 'signed';
+
+        signer._address = msg.sender;
+
+        documents[_hash].signers[msg.sender] = signer;
+
+        OnSignDocument(_hash, msg.sender, signer.timestamp);
+
+        return true;
     }
 
     function getDocumentSigners(string _hash) view public returns (address[]) {
@@ -79,20 +97,8 @@ contract CANSign {
         return documents[_hash].creator;
     }
 
-    function getDocumentName(string _hash) view public returns (string) {
-        return documents[_hash].name;
-    }
-
-    function getDocumentExpirationDate(string _hash) view public returns (uint256) {
-        return documents[_hash].expirationDate;
-    }
-
-    function getDocumentLastModifiedDate(string _hash) view public returns (uint256) {
-        return documents[_hash].lastModified;
-    }
-
-    function getDocumentUploadedAtDate(string _hash) view public returns (uint256) {
-        return documents[_hash].uploadedAt;
+    function getDocumentTimestamp(string _hash) view public returns (uint256) {
+        return documents[_hash].timestamp;
     }
 
     function getSignerEmail(string _hash, address _signer) view public returns (string) {
