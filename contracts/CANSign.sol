@@ -1,4 +1,4 @@
-pragma solidity 0.4.19;
+pragma solidity ^0.4.21;
 
 contract CANSign {
     
@@ -43,7 +43,7 @@ contract CANSign {
             }
         }
 
-        OnInvalidSigner(_hash, msg.sender);
+        emit OnInvalidSigner(_hash, msg.sender);
         return false;
     }
 
@@ -64,7 +64,7 @@ contract CANSign {
         documents[_hash].timestamp = block.timestamp;
         documents[_hash]._signers = _signers;
 
-        OnAddDocument(_hash, documents[_hash].timestamp);
+        emit OnAddDocument(_hash, documents[_hash].timestamp);
     }
 
     function sign(string _hash) public returns (bool) {
@@ -82,7 +82,7 @@ contract CANSign {
 
         documents[_hash].signers[msg.sender] = signer;
 
-        OnSignDocument(_hash, msg.sender, signer.timestamp);
+        emit OnSignDocument(_hash, msg.sender, signer.timestamp);
 
         return true;
     }
